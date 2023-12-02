@@ -92,7 +92,7 @@ func NewCalibration(value string, part string) Calibration {
 		}
 		slog.Info("matches so far", "matches", matches)
 	}
-	slog.Info("matched digits", "value", value, "matches", matches)
+	slog.Info("matched digits", "value", originalValue, "matches", matches)
 	
 	matchOne := Digit(matches[0])
 	lastMatch := Digit(matches[len(matches) - 1])
