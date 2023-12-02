@@ -36,7 +36,7 @@ func TestCalibrationsSumPart2(t *testing.T){
 	var cal3 Calibration = NewCalibration("twojsi8294jaskdfnine", "2")
 
 	if cal1.GetNumber() != 9 {
-		t.Fatalf("Cal1 was not expected, wanted 9 but got %d", cal1.GetNumber)
+		t.Fatalf("Cal1 was not expected, wanted 9 but got %d", cal1.GetNumber())
 	}
 	if cal2.GetNumber() != 19 {
 		t.Fatalf("Cal2 was not expected, wanted 19 but got %d", cal2.GetNumber())
