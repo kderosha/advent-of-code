@@ -11,6 +11,27 @@ var regexpP1 *regexp.Regexp = regexp.MustCompile(`\d`)
 // Check for p2 regex
 var regexpP2 *regexp.Regexp = regexp.MustCompile(`\d|one|two|three|four|five|six|seven|eight|nine`)
 
+var digitMap  = map[string]string{
+	"one": "1",
+	"two": "2",
+	"three": "3",
+	"four": "4",
+	"five": "5",
+	"six": "6",
+	"seven": "7",
+	"eight": "8",
+	"nine": "9",
+	"1": "1",
+	"2": "2",
+	"3": "3",
+	"4": "4",
+	"5": "5",
+	"6": "6",
+	"7": "7",
+	"8": "8",
+	"9": "9",
+}
+
 type Calibrations []Calibration
 
 // Sum up all of the calibration items 
@@ -42,28 +63,7 @@ func (c Calibration) GetNumber() int {
 type Digit string
 
 func (d Digit) String() string {
-	switch d {
-	case "one":
-		return "1"
-	case "two":
-		return "2"
-	case "three":
-		return "3"
-	case "four":
-		return "4"
-	case "five":
-		return "5"
-	case "six":
-		return "6"
-	case "seven":
-		return "7"
-	case "eight":
-		return "8"
-	case "nine":
-		return "9"
-	default:
-		return string(d)
-	}
+	return digitMap[string(d)]
 }
 
 // Compute the value of the calibrations
