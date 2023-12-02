@@ -15,10 +15,11 @@ func main(){
 	}
 	defer file.Close()
 
-	// Read line
 	var calibrations calibration.Calibrations = make(calibration.Calibrations, 0)
 
+	// Create file scanner
 	scanner := bufio.NewScanner(file)
+	// Read line
 	for scanner.Scan() {
 		line := scanner.Text()
 		calibrations = append(calibrations, calibration.NewCalibration(line, "2"))
