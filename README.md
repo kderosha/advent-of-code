@@ -2,4 +2,4 @@
 Repository maintaining solutions for https://adventofcode.com/
 
 # Releases
-Releases are created with . notation versioning. <day>.<part>.<version>. This enables easy viewing of changes over time as things get improved and patched.
+Release versions are formatted with dot notation day.part.version enabling quick tagging of the day/part/patch of each solution. This enables easy viewing of changes over time as things get improved and patched.
