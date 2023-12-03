@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 )
+
 // Holds information about the evaluation of a game.
 type Evaluation struct {
 	possible bool
@@ -100,12 +101,9 @@ func NewGame(game string) (Game, error) {
 		return Game{}, err
 	}
 
-	// create new rounds
-	rounds := createRounds(roundsSubstring)
-
 	return Game{
 		Id: id,
-		Rounds: rounds,
+		Rounds: createRounds(roundsSubstring),
 	}, nil
 }
 
@@ -124,26 +122,25 @@ func createRounds(roundsSubstring string) []Round {
 
 // Parse the round
 // Parse all the colors into a map
-// Example round
+// Example round [N, color, N, color]
 func NewRound(round string) Round {
 	round = strings.ReplaceAll(round, ",", "")
 	parts := strings.Split(round, " ")
 	slog.Info("Parsed parts", "parts", parts)
-	//[N, color, N, color]
-	tuple := 0
+	colorIdx := 0
 	var colorMap map[string]int = make(map[string]int, 0)
 
-	for tuple < len(parts) / 2 {
-		slog.Info("numberOfColor", "parts[tuple]", parts[tuple*2])
-		number, err := strconv.Atoi(strings.Trim(parts[tuple*2], " "))
+	for colorIdx < len(parts) / 2 {
+		slog.Info("numberOfColor", "parts[colorIdx]", parts[colorIdx*2])
+		number, err := strconv.Atoi(strings.Trim(parts[colorIdx*2], " "))
 		if err != nil {
 			slog.Info("Error parsing number of colored cubes")
 		}
 
-		slog.Info("Color of cubes", "color", parts[tuple * 2 + 1])
-		color := parts[tuple * 2 + 1]
+		slog.Info("Color of cubes", "color", parts[colorIdx * 2 + 1])
+		color := parts[colorIdx * 2 + 1]
 
-		tuple++
+		colorIdx++
 		colorMap[color] = number
 	}
 
@@ -151,7 +148,6 @@ func NewRound(round string) Round {
 		roundString: round,
 		colors: colorMap,
 	}
-
 }
 
 // Parse out the game id from the game string
