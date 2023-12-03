@@ -1,8 +1,15 @@
 package game
 
+import (
+	"strings"
+	"log/slog"
+	"fmt"
+	"strconv"
+
+)
 type Game struct {
-	id int
-	rounds []Round
+	Id int
+	Rounds []Round
 }
 
 func NewGame(game string) (Game, error) {
@@ -21,8 +28,8 @@ func NewGame(game string) (Game, error) {
 	rounds := createRounds(roundsSubstring)
 
 	return Game{
-		id: id,
-		rounds: rounds,
+		Id: id,
+		Rounds: rounds,
 	}, nil
 }
 
@@ -34,9 +41,41 @@ func createRounds(roundsSubstring string) []Round {
 	slog.Info("Processed rounds substring", "rounds", rounds, "numOfRounds", numOfRounds)
 	newRounds := make([]Round, 0)
 	for _, round := range rounds {
-		newRounds = append(newRounds, NewRound(round))
+		newRounds = append(newRounds, NewRound(strings.Trim(round, " ")))
 	}
 	return newRounds
+}
+
+// Parse the round
+// Parse all the colors into a map
+// Example round
+func NewRound(round string) Round {
+	round = strings.ReplaceAll(round, ",", "")
+	parts := strings.Split(round, " ")
+	slog.Info("Parsed parts", "parts", parts)
+	//[N, color, N, color]
+	tuple := 0
+	var colorMap map[string]int = make(map[string]int, 0)
+
+	for tuple < len(parts) / 2 {
+		slog.Info("numberOfColor", "parts[tuple]", parts[tuple*2])
+		number, err := strconv.Atoi(strings.Trim(parts[tuple*2], " "))
+		if err != nil {
+			slog.Info("Error parsing number of colored cubes")
+		}
+
+		slog.Info("Color of cubes", "color", parts[tuple * 2 + 1])
+		color := parts[tuple * 2 + 1]
+
+		tuple++
+		colorMap[color] = number
+	}
+
+	return Round{
+		roundString: round,
+		colors: colorMap,
+	}
+
 }
 
 // Parse out the game id from the game string
@@ -58,22 +97,28 @@ type Round struct {
 	colors map[string]int
 }
 
-func (r Round) Possible(p Puzzle) bool {
+func (r Round) String() string {
+	return fmt.Sprintf("%s, colors: %+v", r.roundString, r.colors)
+}
+
+// Determines if this round is possible with a given puzzle
+func (r Round) Possible(redLimit, blueLimit, greenLimit int) bool {
+	slog.Info("Checking if round is possible", "round", r)
 	// Get red color from Round compare to red limit
 	if redColor, ok := r.colors["red"] ; ok {
-		if redColor > p.redLimit {
+		if redColor > redLimit {
 			return false
 		}
 	}
 
 	if blueColor, ok := r.colors["blue"]; ok {
-		if blueColor > p.blueLimit {
+		if blueColor > blueLimit {
 			return false
 		}
 	}
 
 	if greenColor, ok := r.colors["green"] ; ok {
-		if greenColor > p.greenLimit {
+		if greenColor > greenLimit {
 			return false
 		}
 	}
