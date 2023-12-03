@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 )
+
 // Holds information about the evaluation of a game.
 type Evaluation struct {
 	possible bool
@@ -100,12 +101,9 @@ func NewGame(game string) (Game, error) {
 		return Game{}, err
 	}
 
-	// create new rounds
-	rounds := createRounds(roundsSubstring)
-
 	return Game{
 		Id: id,
-		Rounds: rounds,
+		Rounds: createRounds(roundsSubstring),
 	}, nil
 }
 
