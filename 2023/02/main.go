@@ -35,18 +35,14 @@ func main() {
 		puzzle.Games = append(puzzle.Games, game)
 	}
 	sum := 0
+	power := 0
 	for _, game := range puzzle.Games {
 		id := game.Id
-		possible := true
-		for _, round := range game.Rounds {
-			if !round.Possible(puzzle.RedLimit, puzzle.BlueLimit, puzzle.GreenLimit) {
-				possible = false
-			}
-		}
-		slog.Info("Outputting if game was possible", "game", game.Id, "rounds", game.Rounds, "possible", possible)
-		if possible {
+		evaluation := game.Evaluate(puzzle.RedLimit, puzzle.BlueLimit, puzzle.GreenLimit)
+		if possible, _ := evaluation.Possible(); possible {
 			sum += id
-		}
+		} 
+		power += game.Power()
 	}
-	slog.Info("The final sum of all the possible games is.", "sum", sum)
+	slog.Info("The final sum of all the possible games is.", "sum", sum, "power", power)
 }
