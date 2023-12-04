@@ -53,6 +53,8 @@ func main() {
 				}
 				if character == '.' {
 					processed[x] = 0
+				} else if character == '*' {
+					processed[x] = -2
 				} else {
 					processed[x] = -1
 				}
@@ -75,7 +77,7 @@ func main() {
 	for rowIdx, row := range matrix {
 		for columnIdx, _ := range row {
 			// Found symbol
-			if matrix[rowIdx][columnIdx] == -1 {
+			if matrix[rowIdx][columnIdx] < 0 {
 				for subRowIdx := rowIdx - 1; subRowIdx < rowIdx + 2; subRowIdx++ {
 					for subColumnIdx := columnIdx - 1; subColumnIdx < columnIdx + 2; subColumnIdx++ {
 						// Index out of bounds prevention
@@ -105,4 +107,42 @@ func main() {
 		sum += numbers[index-1]
 	}
 	slog.Info("Done processing", "sum", sum)
+	// Process part 2 from the matrix.
+	// Look for all -2s. Get all numbers around it
+	var ratioSums int
+	for rowIdx, row := range matrix {
+		for columnIdx, _ := range row {
+			var indexes []int = make([]int, 0)
+			// Found symbol
+			if matrix[rowIdx][columnIdx] == -2 {
+				for subRowIdx := rowIdx - 1; subRowIdx < rowIdx + 2; subRowIdx++ {
+					for subColumnIdx := columnIdx - 1; subColumnIdx < columnIdx + 2; subColumnIdx++ {
+						// Index out of bounds prevention
+						if subRowIdx >= 0 && subRowIdx < len(matrix) && subColumnIdx >= 0 && subColumnIdx < len(row){
+							value := matrix[subRowIdx][subColumnIdx] 
+							if value > 0 {
+								exists := false
+								for _, index := range indexes {
+									if index == value {
+										exists = true
+									}
+								}
+								if !exists {
+									// Indexes are 1 base instead of 0 based
+									indexes = append(indexes, value)
+								}
+							}
+						}
+					}
+				}
+				slog.Info("Found * numbers next to it", "indexes", indexes)
+				// If there are only two numbers that are indexed we can grab them from the numbers array
+				if len(indexes) == 2 {
+					slog.Info("Found ratios to add to the sum", "ratios", indexes)
+					ratioSums += numbers[indexes[0]-1] * numbers[indexes[1]-1]
+				}
+			}
+		}
+	}
+	slog.Info("Done p2", "ratioSums", ratioSums)
 }
