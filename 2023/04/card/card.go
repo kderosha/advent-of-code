@@ -11,15 +11,16 @@ import (
 var matcher *regexp.Regexp = regexp.MustCompile(`\d+`)
 
 type Card struct {
-	id int
+	Id int
 	rolledValues []int
 	winningValues []int
+	wonValues []int
 }
 
 // Parses input and creates a new card
 // example input:
 // Card   1: 43 19 57 13 44 22 29 20 34 33 | 34 68 13 38 32 57 20 64 42  7 44 54 16 51 33 85 43 24 86 93 83 29 25 19 22
-func NewCard(input string) Card {
+func NewCard(input string) *Card {
 
 	// split the string by | character
 	splitInput := strings.Split(input, " | ")
@@ -29,12 +30,15 @@ func NewCard(input string) Card {
 	id := parseId(idAndRolledValues[0])
 	rolledValues := parseRolledValues(idAndRolledValues[1])
 
-	return Card{
-		id, rolledValues, winningValues,
+	return &Card{
+		Id:id, 
+		rolledValues: rolledValues,
+		winningValues: winningValues,
+		wonValues: make([]int, 0),
 	}
 }
 
-func (c Card) CalculateScore() int {
+func (c *Card) CalculateScore() (int) {
 	score := 0
 	// Sort each of the arrays holding the values
 	slices.Sort(c.rolledValues)
@@ -42,14 +46,29 @@ func (c Card) CalculateScore() int {
 	for _, rolledValue := range c.rolledValues {
 		// Search for the rolled values in the winning values.
 		// Binary search the winning values for the current value.
-		if _, found := slices.BinarySearch(c.winningValues, rolledValue); found  && score == 0{
-			// If found increase score by 1
-			score = 1
-		} else if found {
-			score *= 2
+		wonValuePosition, found := slices.BinarySearch(c.winningValues, rolledValue)
+		if found {
+			c.wonValues = append(c.wonValues, c.winningValues[wonValuePosition])
+			if score == 0 {
+				score = 1
+			} else {
+				score *= 2
+			}
 		}
 	}
-	// Calculate score by 2^matches
+	slog.Info("Finished processing score", "won values", c.wonValues)
+
+	return score
+}
+
+func (c *Card) SubtreeSize(cardMap map[int]*Card) int {
+	if len(c.wonValues) == 0 {
+		return 1
+	}
+	score := 1
+	for idx, _ := range c.wonValues {
+		score += cardMap[c.Id + 1 + idx].SubtreeSize(cardMap)
+	}
 	return score
 }
 
@@ -67,6 +86,7 @@ func parseWinningValues(input string) []int {
 			returnSlice = append(returnSlice, integerValue)
 		}
 	}
+	slog.Info("Finished processing winning values", "values", returnSlice)
 	return returnSlice
 }
 
@@ -86,9 +106,10 @@ func parseRolledValues(input string) []int{
 	for _, valueString := range values {
 		integerValue, err := strconv.Atoi(valueString)
 		if err != nil {
-			slog.Error("Error parsing winning value", "valueString", valueString)
+			slog.Error("Error parsing rolled values", "valueString", valueString)
 		}
 		returnSlice = append(returnSlice, integerValue)
 	}
+	slog.Info("Finished processing rolled values", "values", returnSlice)
 	return returnSlice
 }

@@ -26,8 +26,8 @@ func TestCardProcessingFromStringInput(t *testing.T) {
 		if !testArrayEquality(card.rolledValues, testCase.cardValues) {
 			t.Fatalf("Cards rolled values are not expected, want %v got %v", testCase.cardValues, card.rolledValues)
 		}
-		if card.id != testCase.expectedId {
-			t.Fatalf("Card id was not expected, want %d got %d", testCase.expectedId, card.id)
+		if card.Id != testCase.expectedId {
+			t.Fatalf("Card id was not expected, want %d got %d", testCase.expectedId, card.Id)
 		}
 		if !testArrayEquality(card.winningValues, testCase.winningValues) {
 			t.Fatalf("card winning values were not expected, want %v got %v", testCase.winningValues, card.winningValues)
@@ -39,16 +39,21 @@ func TestCalculateCardScore(t *testing.T) {
 	testCases := []struct{
 		input string
 		expectedScore int
+		expectedWinningValues []int
 	}{{
 		input: "Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53",
 		expectedScore: 8,
+		expectedWinningValues: []int{48, 83, 86, 17},
 	}}
 
 	for _, testCase := range testCases {
 		card := NewCard(testCase.input)
 		calculatedScore := card.CalculateScore()
 		if calculatedScore != testCase.expectedScore {
-			t.Fatalf("Calculated score is unexpected, want %f got %f", testCase.expectedScore, calculatedScore)
+			t.Fatalf("Calculated score is unexpected, want %d got %d", testCase.expectedScore, calculatedScore)
+		}
+		if !testArrayEquality(card.wonValues, testCase.expectedWinningValues){
+			t.Fatalf("won values is unexpected, want %v got %v", testCase.expectedWinningValues, card.wonValues)
 		}
 	}
 }
