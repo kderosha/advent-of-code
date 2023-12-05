@@ -15,6 +15,7 @@ type Card struct {
 	rolledValues []int
 	winningValues []int
 	wonValues []int
+	subtreeSize int
 }
 
 // Parses input and creates a new card
@@ -62,14 +63,20 @@ func (c *Card) CalculateScore() (int) {
 }
 
 func (c *Card) SubtreeSize(cardMap map[int]*Card) int {
-	if len(c.wonValues) == 0 {
-		return 1
+	if c.subtreeSize != 0 {
+		return c.subtreeSize
+	} else {
+		if len(c.wonValues) == 0 {
+			c.subtreeSize = 1
+			return 1
+		}
+		score := 1
+		for idx, _ := range c.wonValues {
+			score += cardMap[c.Id + 1 + idx].SubtreeSize(cardMap)
+		}
+		c.subtreeSize = score
+		return score
 	}
-	score := 1
-	for idx, _ := range c.wonValues {
-		score += cardMap[c.Id + 1 + idx].SubtreeSize(cardMap)
-	}
-	return score
 }
 
 func parseWinningValues(input string) []int {
