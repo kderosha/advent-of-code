@@ -1,20 +1,21 @@
 package main
 
 import (
-	"github.com/kderosha/advent-of-code/2023/05/transformations"
-	"regexp"
-	"log/slog"
-	"os"
-	"fmt"
 	"bytes"
-	"strconv"
+	"fmt"
+	"log/slog"
 	"math"
+	"os"
+	"regexp"
+	"strconv"
 	"sync"
+
+	"github.com/kderosha/advent-of-code/2023/05/transformations"
 )
 
 var digits *regexp.Regexp = regexp.MustCompile(`\d+`)
 
-func main(){
+func main() {
 	puzzleInput, err := os.ReadFile("puzzle_input.txt")
 	if err != nil {
 		panic(err)
@@ -29,9 +30,8 @@ func main(){
 	// For the rest of the puzzle parse into transformation chain
 	slog.Info("Rest of the puzzle", "puzzle", string(puzzleInput[firstNewLineIndex+2:]))
 
-
-	// Take the rest of the lines and 
-	tc := transformations.NewTransformationChain(puzzleInput[firstNewLineIndex + 2:])
+	// Take the rest of the lines and
+	tc := transformations.NewTransformationChain(puzzleInput[firstNewLineIndex+2:])
 	for _, seed := range seeds {
 		transformedSeedValues = append(transformedSeedValues, tc.Transform(seed, transformations.Source("seed")))
 	}
@@ -41,12 +41,12 @@ func main(){
 	slog.Info("Process part 2")
 	var p2MinValues []int = make([]int, 0)
 	var wg sync.WaitGroup
-	for x := 0; x + 1 < len(seeds); x+=2{
+	for x := 0; x+1 < len(seeds); x += 2 {
 		wg.Add(1)
 		y := x
-		go func(){
+		go func() {
 			defer wg.Done()
-			p2MinValues = append(p2MinValues, findSmallestLocationInRange(tc, seeds[y], seeds[y + 1]))
+			p2MinValues = append(p2MinValues, findSmallestLocationInRange(tc, seeds[y], seeds[y+1]))
 		}()
 	}
 	wg.Wait()
@@ -59,7 +59,7 @@ func findSmallestLocationInRange(tc transformations.TransformationChain, startVa
 	var values []int = make([]int, 0, rangeSize)
 	endValue := startValue + rangeSize - 1
 	slog.Info("Finding the smallest number by transforming every number in a given range", "startValue", startValue, "endValue", endValue)
-	for seedValue := startValue; seedValue <= endValue; seedValue++{
+	for seedValue := startValue; seedValue <= endValue; seedValue++ {
 		values = append(values, tc.Transform(seedValue, transformations.Source("seed")))
 	}
 	return findMinValueInArray(values)
