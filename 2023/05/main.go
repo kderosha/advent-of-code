@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"strconv"
 	"math"
+	"sync"
 )
 
 var digits *regexp.Regexp = regexp.MustCompile(`\d+`)
@@ -39,10 +40,16 @@ func main(){
 	slog.Info("Smallest transformed value calculated", "value", p1Answer)
 	slog.Info("Process part 2")
 	var p2MinValues []int = make([]int, 0)
-	for x := 0; x + 1 < len(seeds); {
-		p2MinValues = append(p2MinValues, findSmallestLocationInRange(tc, seeds[x], seeds[x + 1]))
-		x = x + 2
+	var wg sync.WaitGroup
+	for x := 0; x + 1 < len(seeds); x+=2{
+		wg.Add(1)
+		y := x
+		go func(){
+			defer wg.Done()
+			p2MinValues = append(p2MinValues, findSmallestLocationInRange(tc, seeds[y], seeds[y + 1]))
+		}()
 	}
+	wg.Wait()
 	part2Answer := findMinValueInArray(p2MinValues)
 	slog.Info("Part 2 is done processing", "p2MinValues", p2MinValues, "answer", part2Answer)
 }
