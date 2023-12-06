@@ -5,6 +5,7 @@ import (
 	"os"
 	"bufio"
 	"log/slog"
+	"time"
 )
 
 func main() {
@@ -31,11 +32,13 @@ func main() {
 	}
 	slog.Info("Finished processing puzzle", "score", finalScore)
 	part2Score := 0
+	start := time.Now().UnixMilli()
 	for _, value := range cardMap {
 		part2Score += value.SubtreeSize(cardMap)
 	}
 	slog.Info("Finished part 2", "score", part2Score)
-
+	end := time.Now().UnixMilli()
+	slog.Info("Part 2 took: ", "time", end - start)
 }
 
 /*
