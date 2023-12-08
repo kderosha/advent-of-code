@@ -123,7 +123,7 @@ func calculateHandType(cards []Card) int {
 	if rankBuckets[0] == 1 {
 		return Pair
 	}
-	return 0
+	return HighCard
 }
 
 type Card struct {
@@ -164,6 +164,8 @@ func NewCard(cardSymbol rune) Card {
 		rank = 11
 	case 'A':
 		rank = 12
+	default:
+		panic(fmt.Errorf("error determining card rank for symbol: %s", string(cardSymbol)))
 	}
 	return Card{rank}
 }
