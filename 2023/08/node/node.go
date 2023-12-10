@@ -1,6 +1,9 @@
 package node
 
-import "log/slog"
+import (
+	"fmt"
+	"log/slog"
+)
 
 type GhostTown struct {
 	NodeMap        map[string]*Node
@@ -39,4 +42,16 @@ type Node struct {
 	Root  string
 	Left  string
 	Right string
+}
+
+func (n *Node) Step(nodeMap map[string]*Node, direction int) *Node {
+	if direction == 0 {
+		return nodeMap[n.Left]
+	} else {
+		return nodeMap[n.Right]
+	}
+}
+
+func (n *Node) String() string {
+	return fmt.Sprintf("%+v", *n)
 }

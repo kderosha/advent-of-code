@@ -50,4 +50,34 @@ func main() {
 		NodeMap:        nodeMap,
 	}
 	slog.Info("Part 1 answer", "value", ghostTown.Traverse("AAA"))
+	// Find all keys that end with the letter A
+	part2Nodes := make([]*node.Node, 0)
+	for key, value := range nodeMap {
+		if key[2] == 'A' {
+			// Add the node to an array that will be iterated on with the directions.
+			part2Nodes = append(part2Nodes, value)
+		}
+	}
+	slog.Info("Parsed the nodes that end with A for part 2", "nodes", part2Nodes)
+	// Loop until all the nodes end in Z
+	directionArrayIndex := 0
+	p2Steps := 0
+	allEndInZ := false
+	for !allEndInZ {
+		allEndInZ = true
+		p2Steps++
+		for x, node := range part2Nodes {
+			nextNode := node.Step(ghostTown.NodeMap, directions[directionArrayIndex])
+			if nextNode.Root[2] != 'Z' {
+				allEndInZ = false
+			}
+			part2Nodes[x] = nextNode
+		}
+		slog.Info("Finished step ", "numOfSteps", p2Steps, "current nodes", part2Nodes)
+		directionArrayIndex++
+		if directionArrayIndex == len(directions) {
+			directionArrayIndex = 0
+		}
+	}
+	slog.Info("Done processing part 2", "answer", p2Steps)
 }
