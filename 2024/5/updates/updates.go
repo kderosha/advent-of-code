@@ -115,12 +115,35 @@ func findIndex(n int, order []int) int {
             return idx
         }
     }
-    return 0
+    return -1
+}
+
+func findIndexInt64(n int, order []int64) int {
+    for idx, compare := range order {
+        if int64(n) == compare {
+            return idx
+        }
+    }
+    return -1
 }
 
 func (u *update) Correct() bool {
     slog.Info("Is update correct", "update", u)
     return u.correct
+}
+
+func (u *update) CorrectTheOrdering() {
+    updatedArray := make([]int64, 0)
+    topoSort, err := graph.TopologicalSort(u.g)
+    if err != nil {
+        panic(err)
+    }
+    for _, n := range topoSort {
+        if findIndexInt64(n, u.u) != -1 {
+            updatedArray = append(updatedArray, int64(n))
+        }
+    }
+    u.u = updatedArray
 }
 
 func (u *update) String() string {
@@ -141,11 +164,24 @@ func (p *Puzzle) SolutionOne() int {
         if update.Correct() {
             n := update.FindMiddle()
             answer += n
+        }  
+    }
+    return answer
+}
+
+func (p *Puzzle) SolutionTwo() int {
+    answer := 0
+    for _, update := range p.updates {
+        update.Evaluate()
+        if !update.Correct() {
+            slog.Info("Correcting the ordering", "before", update.u)
+            update.CorrectTheOrdering()
+            update.Evaluate()
+            slog.Info("Is new order correct", "correct", update.Correct())
+            if update.Correct() {
+                answer += update.FindMiddle()
+            }
         }
     }
     return answer
 }
-func (p *Puzzle) SolutionTwo() int {
-    return 0
-}
-
